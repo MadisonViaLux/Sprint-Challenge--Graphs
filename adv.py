@@ -27,45 +27,63 @@ player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
-def projected_path(starting_room, already_visited=set()):
+
+
+def projected_path(starting_room, all_rooms=set()):
     visited = set()
-    for room in already_visited:
+
+    for room in all_rooms:
         visited.add(room)
         path = []
         opposite = {'n': 's', 'e': 'w', 's': 'n', 'w': 'e'}
-        def add_to_path(room, back=None):
-            visited.add(room)
-            exits = room.get_exits()
+
+        def add_to_path(r, back_to=None):
+            visited.add(r)
+            exits = r.get_exits()
+
             for direction in exits:
-                if room.get_room_in_direction(direction) not in visited:
+                if r.get_room_in_direction(direction) not in visited:
                     path.append(direction)
-                    add_to_path(room.get_room_in_direction(direction), opposite[direction])
-            if back: path.append(back)
+                    add_to_path(r.get_room_in_direction(direction), opposite[direction])
+
+            if back_to:
+                path.append(back_to)
+
         add_to_path(starting_room)
+
         return path
+
 
 def create_path(starting_room, visited=set()):
     path = []
     opposite = {'n': 's', 'e': 'w', 's': 'n', 'w': 'e'}
-    def add_to_path(room, back=None):
+
+    def add_to_path(room, back_to=None):
         visited.add(room)
         exits = room.get_exits()
         path_length = {}
+        traverse_order = []
+
         for direction in exits:
             path_length[direction] = len(projected_path(room.get_room_in_direction(direction), visited))
-        traverse_order = []
-        for key, _ in sorted(path_length.items(), key=lambda x: x[1]):
+
+        for key, value in sorted(path_length.items(), key=lambda x: x[1]):
             traverse_order.append(key)
+
         for direction in traverse_order:
             if room.get_room_in_direction(direction) not in visited:
                 path.append(direction)
                 add_to_path(room.get_room_in_direction(direction), opposite[direction])
+
         if len(visited) == len(world.rooms):
             return
-        elif back:
-            path.append(back)
+        elif back_to:
+            path.append(back_to)
+
     add_to_path(starting_room)
+
     return path
+
 
 traversal_path = create_path(world.starting_room)
 
