@@ -29,7 +29,7 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 
 
-def projected_path(starting_room, all_rooms=set()):
+def next_path(starting_room, all_rooms=set()):
     visited = set()
 
     for room in all_rooms:
@@ -65,9 +65,9 @@ def create_path(starting_room, visited=set()):
         traverse_order = []
 
         for direction in exits:
-            path_length[direction] = len(projected_path(room.get_room_in_direction(direction), visited))
+            path_length[direction] = len(next_path(room.get_room_in_direction(direction), visited))
 
-        for key, value in sorted(path_length.items(), key=lambda x: x[1]):
+        for key, value in sorted(path_length.items(), key=lambda val: val[1]):
             traverse_order.append(key)
 
         for direction in traverse_order:
